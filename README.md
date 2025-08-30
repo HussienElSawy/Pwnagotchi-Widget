@@ -11,9 +11,11 @@ This project is a simple Pwnagotchi GUI application that loads and displays Pwna
 ## 📦 Requirments
 - Python 3.x
 - PyQt5
+- yaml
 
 Install dependencies:
 `pip install PyQt5`
+`pip install yaml`
 
 ## 🚀 Running the App
 in the `config.yaml` set your ip and port

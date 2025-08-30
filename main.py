@@ -5,6 +5,7 @@ from io import BytesIO
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt, QTimer
+import yaml
 
 class ImageRefresher(QWidget):
     def __init__(self):
@@ -18,9 +19,12 @@ class ImageRefresher(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setScaledContents(True)
 
-        self.label.setFont(QFont("Courier", 14))
+        self.label.setFont(QFont("Courier", 14, QFont.Bold))
 
-        self.base_url = "http://10.0.0.2:8080/ui"
+        self.config = self.load_config()
+        self.ip = self.config.get("ip", "10.0.0.2")
+        self.port = self.config.get("port", 8080)
+        self.base_url = f"http://{self.ip}:{self.port}/ui"
         
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_image)
@@ -28,6 +32,10 @@ class ImageRefresher(QWidget):
 
         self.update_image()
 
+    def load_config(self):
+        with open("config.yaml", "r") as f:
+            return yaml.safe_load(f)
+    
     def connectivity_check(self):
         try:
             requests.get(self.base_url, timeout=2)
@@ -43,7 +51,7 @@ class ImageRefresher(QWidget):
             pixmap.loadFromData(BytesIO(response.content).read())
             self.label.setPixmap(pixmap)
         except Exception as e:
-            self.label.setText(f"Couldn't Connect to Pwnagotchi UI")
+            self.label.setText(f"Couldn't Connect to Pwnagotchi\nIP={self.ip} Port={self.port}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
